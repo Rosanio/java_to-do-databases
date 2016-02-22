@@ -5,6 +5,17 @@ public class Task {
   private int id;
   private String description;
 
+  @Override
+  public boolean equals(Object otherTask){
+    if (!(otherTask instanceof Task)) {
+      return false;
+    } else {
+      Task newTask = (Task) otherTask;
+      return this.getDescription().equals(newTask.getDescription()) &&
+             this.getID() == newTask.getID();
+    }
+  }
+
   public int getID() {
     return id;
   }
@@ -24,13 +35,22 @@ public class Task {
     }
   }
 
-  @Override
-  public boolean equals(Object otherTask){
-    if (!(otherTask instanceof Task)) {
-      return false;
-    } else {
-      Task newTask = (Task) otherTask;
-      return this.getDescription().equals(newTask.getDescription());
+  public void save() {
+    String sql = "INSERT INTO tasks (description) values (:description)";
+    try(Connection con = DB.sql2o.open()) {
+      this.id = (int) con.createQuery(sql, true)
+      .addParameter("description", description)
+      .executeUpdate()
+      .getKey();
+    }
+  }
+
+  public static Task find(int taskID) {
+    try (Connection con = DB.sql2o.open()) {
+      String sql = "SELECT * FROM tasks WHERE id = :ID";
+      return con.createQuery(sql)
+      .addParameter("ID", taskID)
+      .executeAndFetchFirst(Task.class);
     }
   }
 }
