@@ -11,7 +11,12 @@ public class TaskTest {
     assertEquals(Task.all().size(), 0);
   }
 
-
+  @Test
+  public void equals_returnsTrueIfDescriptionsAreTheSame() {
+    Task firstTask = new Task("Mow the Lawn");
+    Task secondTask = new Task("Mow the Lawn");
+    assertTrue(firstTask.equals(secondTask));
+  }
 
 
 }
